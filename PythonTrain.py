@@ -28,9 +28,11 @@ men_onboard = data[men_only_stats,0].astype(np.float)
 proportion_women_survived = np.sum(women_onboard) / np.size(women_onboard)  
 proportion_men_survived = np.sum(men_onboard) / np.size(men_onboard) 
 
+'''
 #and then print it out
 print 'Proportion of women who survived is %s' % proportion_women_survived
 print 'Proportion of men who survived is %s' % proportion_men_survived
+'''
 
 #Create passenger bins on fare (set ceiling to 39), gender, class
 fare_ceiling = 40
@@ -61,18 +63,34 @@ for i in xrange(number_of_classes):       #search through each class
 
 survival_table[ survival_table != survival_table ] = 0. #set mean of empty bins to 0
 
-print survival_table
-'''
+# Make table deterministic
+survival_table[ survival_table >= 0.5]=1
+survival_table[ survival_table<0.5]= 0
+
+# Create predictions from survival table
 test_file_object = csv.reader(open('test.csv', 'rU'))
 header = test_file_object.next()
 
-open_file_object = csv.writer(open("genderbasedmodelpy.csv", "wb"))
+open_file_object = csv.writer(open("genderclasspricebasedmodelpy.csv", "wb"))
 
+# Classify each passenger by gender, class, and fare bins
 for row in test_file_object:
+    
     if row[2] == 'female':
-        row.insert(0, '1')
+        i1 = 0
     else:
-        row.insert(0, '0')
+        i1 = 1
+   
+    i2 = int(row[0])-1
+    # If no fare data, assume fare correlated with class, i.e., third class is first bin, etc.
+    try:
+        i3= min(int(float(row[7])/float(fare_bracket_size)), number_of_price_brackets-1)
+    except:
+        i3 = 3 - float(row[0])
+
+    # Insert survival prediction for each passenger from the bin value in survival table
+    row.insert(0, survival_table[i1, i2, i3])
+
     open_file_object.writerow(row)
-'''
+
 
