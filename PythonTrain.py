@@ -1,40 +1,38 @@
-#The first thing to do is to import the relevant packages
-# that I will need for my script, 
-#these include the Numpy (for maths and arrays)
-#and csv for reading and writing csv files
-#If i want to use something from this I need to call 
-#csv.[function] or np.[function] first
+#Classify training data into bins based on gender, class, and fare
+#bucket. Create a survival table calculating mean survival rate per
+#bin and round to 0 or 1. Create predictions by finding correct
+#bin for each passenger in test data. 
 
 import csv as csv 
 import numpy as np
+
+#Exploratory analysis - survival likelihoods by gender, class, etc. 
 
 #Open up the csv file in to a Python object
 csv_file_object = csv.reader(open('train.csv', 'rU')) 
 header = csv_file_object.next()
 
-data=[]                          #Create a variable called 'data'
-for row in csv_file_object:      #Run through each row in the csv file
-    data.append(row)             #adding each row to the data variable
-data = np.array(data)            #Then convert from a list to an array
+data=[]                          
+for row in csv_file_object:      
+    data.append(row)             
+data = np.array(data)            
 
-women_only_stats = data[0::,3] == "female" #This finds women  
+women_only_stats = data[0::,3] == "female" 
 
-men_only_stats = data[0::,3] != "female"   #This finds men
+men_only_stats = data[0::,3] != "female"   
 
 women_onboard = data[women_only_stats,0].astype(np.float)     
 men_onboard = data[men_only_stats,0].astype(np.float)
 
-# Then we find the proportions of them that survived
 proportion_women_survived = np.sum(women_onboard) / np.size(women_onboard)  
 proportion_men_survived = np.sum(men_onboard) / np.size(men_onboard) 
 
 '''
-#and then print it out
 print 'Proportion of women who survived is %s' % proportion_women_survived
 print 'Proportion of men who survived is %s' % proportion_men_survived
 '''
 
-#Create passenger bins on fare (set ceiling to 39), gender, class
+#Begin creation of bins for survival table. Create passenger bins on fare, gender, class
 fare_ceiling = 40
 data[data[0::,8].astype(np.float) >= fare_ceiling, 8] = fare_ceiling-1.0
 fare_bracket_size = 10
@@ -73,7 +71,7 @@ header = test_file_object.next()
 
 open_file_object = csv.writer(open("genderclasspricebasedmodelpy.csv", "wb"))
 
-# Classify each passenger by gender, class, and fare bins
+# Draw predictions for test data using the survival table, and output
 for row in test_file_object:
     
     if row[2] == 'female':
