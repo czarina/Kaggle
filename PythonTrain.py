@@ -1,6 +1,6 @@
 #Classify training data into bins based on gender, class, and fare
 #bucket. Create a survival table calculating mean survival rate per
-#bin and round to 0 or 1. Create predictions by finding correct
+#bin and make deterministic. Create predictions by finding correct
 #bin for each passenger in test data. 
 
 import csv as csv 
