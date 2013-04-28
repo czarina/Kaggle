@@ -73,7 +73,6 @@ open_file_object = csv.writer(open("genderclasspricebasedmodelpy.csv", "wb"))
 open_file_object.writerow(header)
 # Draw predictions for test data using the survival table, and output
 for row in test_file_object:
-    print row
     if row[2] == 'female':
         i1 = 0
     else:
