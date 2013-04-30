@@ -78,17 +78,21 @@ Forest = RandomForestClassifier(n_estimators = 100)
 Forest = Forest.fit(train_data[0::,1::], train_data[0::,0]) 
 Output = Forest.predict(test_data)                       
 
-#Print output
+#Prepare output
 test_file_object = csv.reader(open('test.csv', 'rU'))
 header = test_file_object.next()
 
+#Run RandomForest
 header.insert(0, "survived")
 open_file_object = csv.writer(open("RandomForest.csv", "wb"))
 open_file_object.writerow(header)
 count = 0
-for row in test_file_object:
 
-	row.insert(0, Output[count])
+for row in test_file_object:
+	if(Output[count]>0):
+		row.insert(0, 1)
+	else:
+		row.insert(0, 0)
 	open_file_object.writerow(row)
 	count = count+1
 
